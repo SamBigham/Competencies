@@ -173,10 +173,36 @@ if (compact) {
   <p class="indent">
   
     All we have to do to run tests is type npx vitest. This tests our entire code and runs every single test.  If there is an error or a failed test, that is tested simply
-    with the npx vitest. 
+    with the npx vitest. I also added a github workflow to automatically check and run the tests whenever we merge. And this should help reject the code if it fails the tests. This workflow is pasted below.
+    I also updated json config to use these tests. When we were testing backend, we discovered a major bug. People could create new bets even if they didn't have an account. 
+    This saved us time from having to look for a big bug to fix and allowed our back end to fix that while we were all together. Testing has also done well for making sure every version of the code is correct. 
+    Tests were very useful for making sure no one is submitting any big merge that will cause thousands of bugs. We didn't do that for one merge which created a big problem for the team. This was also helpful as before I merged on my 
+    changes, I went through the tests we as a group started to write, and I realized my github was not properly synced up. This could have been much worse and the test helped me find the problem before I made a pull request. 
   
   </p>
 
+  <pre>
+    name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+  </pre>
 
   <h2>Third competency:</h2>
   <h3>Design</h3>
@@ -367,7 +393,18 @@ if (compact) {
   <p class="indent">
 
     I helped Youssef with the security advanced competencies. Front-end did not have to deal with security as much, so it was interesting trying to understand and help work on the back-end. 
-    Overall, p
+    Overall, I helped Youssef with talking about sql injection, and putting preventions to typing incredibly long passwords which crash the database. Sql injections were interesting and I helped fix the 
+    concatenations which can cause sql injections. For the surface area of the system, potential areas of user interaction are: upvoting, betting, commenting, creating a bet, login, logout, registration, report, and the minigames.
+    In terms of possible threats, some examples would be. A bad actor, a hacker trying to use sequal injection to get a list of all our users. They want to get this information to sell it.
+    Another example could be a bad actor, a rival company trying to crash our website by sending too many requests. 
+    Another would be a rival company trying to make a password too long so it overloads our database.
+    Another threat could be if a user took someones password, they could stay on the account forever as long as they don't log out. 
+    If a user would comment an arbitrary amount to close someone else's bet, that could also be a problem.
+    If a user keeps making new accounts so they can bet on their own post to get it to the top, that would also be a problem.
+
+    For each of these threats we do have potential solutions. For sql injections, we don't have any of the concatenations or stuff that 
+    allow users to use sql injections. We also created a limit for the password length to prevent arbitrary length passwords. Other potential fixes would be timed logouts, so each user is logged out after
+    30 days. Limiting comments to prevent spamming, and tying accounts to grinnell email usernames so each person only gets one.
 
 
 
